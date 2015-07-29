@@ -2,6 +2,7 @@
   "dependencies": {
     "bl": "",
     "concat-stream": "",
-    "async": ""
+    "async": "",
+    "after": ""
   }
 }
