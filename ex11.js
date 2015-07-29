@@ -24,7 +24,7 @@ var fs = require('fs');
 // http.createServer() takes a callback that is called once for each connection received by your server. The callback function has the signature:
 
 var server = http.createServer(function(request, response) {
-  response.writeHead(200, { 'content-type': 'text/plain' })
+  response.writeHead(200, { 'content-type': 'text/plain' });
 
   fs.createReadStream(filename).pipe(response);
 });
