@@ -4,6 +4,7 @@
     "concat-stream": "",
     "async": "",
     "after": "",
-    "strftime": ""
+    "strftime": "",
+    "through2-map": ""
   }
 }
