@@ -32,21 +32,28 @@ function httpGet(url, cb) {
              });
 }
 
+function streamToString(stream, cb) {
+  stream.setEncoding('utf-8');
+  stream.pipe(bl(function(err, data) {
+    if (err) {
+      cb(err, null);
+    } else {
+      cb(null, data.toString());
+    }
+  }));
+}
+
 function fetchUrlToString(url, cb) {
   httpGet(url,
           function(err, stream) {
             if (err) {
               cb(err, null);
             } else {
-              stream.setEncoding('utf-8');
-              stream.pipe(bl(function(err, data) {
-                if (err) {
-                  cb(err, null);
-                } else {
-                  cb(null, data.toString());
-                }
-              }));
-            }});
+              streamToString(stream, function(err, res) {
+                cb(null, res);
+              });
+            }
+          });
 }
 
 async.map(urls,
