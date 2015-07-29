@@ -43,18 +43,7 @@ function streamToString(stream, cb) {
   }));
 }
 
-function fetchUrlToString(url, cb) {
-  httpGet(url,
-          function(err, stream) {
-            if (err) {
-              cb(err, null);
-            } else {
-              streamToString(stream, function(err, res) {
-                cb(null, res);
-              });
-            }
-          });
-}
+var fetchUrlToString = async.compose(streamToString, httpGet);
 
 async.map(urls,
           fetchUrlToString,
