@@ -24,92 +24,32 @@ var urls = [url1, url2, url3];
 // print out the length, just the data as a String; one line per
 // URL. The catch is that you must print them out in the same order as
 // the URLs are provided to you as command-line arguments.
-var numReturned = 0;
 
-
-var output = [];
-
-var outputNow = function() {
-  for (i = 0; i < 3; i++) {
-    console.log(output[i]);
-  }
-};
-
-function createHttpResponseHandler(i) {
-  return function (res) {
-    res.setEncoding('utf-8');
-    res.pipe(bl(function (err, data) { // .pipe() on a stream pipes from one stream to another
-      if (err) // bl() returns a stream, and accepts a callback that is called when the stream is done.
-        return console.error(err);
-      dataStr = data.toString();
-      output[i] = dataStr;
-      numReturned++;
-      if (numReturned == 3) {
-        outputNow();
-      }
-    }));
-  };
-}
-
-
-// function (err, data) { // .pipe() on a stream pipes from one stream to another
-//     if (err) // bl() returns a stream, and accepts a callback that is called when the stream is done.
-//       return console.error(err);
-//     dataStr = data.toString();
-//     output[i] = dataStr;
-//     numReturned++;
-//     if (numReturned == 3) {
-//       outputNow();
-//     }
-//   }));
-
-function streamToBl(res, cb) {
-  res.setEncoding('utf-8');
-  res.pipe(bl(cb));
-}
-
-function fetch(i) {
-  http.get(urls[i], createHttpResponseHandler(i));
-}
-
-function httpGet(url, cb) {
-  http.get(url, function(res) {
-    cb(null, res);
-  });
-}
-
-function dataToString(data, cb) {
-  cb(null, data.toString());
+function fetchUrlToString(url, cb) {
+  http.get(url,
+           function(stream) {
+             stream.setEncoding('utf-8');
+             stream.pipe(bl(function(err, data) {
+               if (err) {
+                 cb(err, null);
+               } else {
+                 cb(null, data.toString());
+               }
+             }));
+           });
 }
 
 async.map(urls,
-          httpGet,
-          function(err, streams) {
+          fetchUrlToString,
+          function(err, datas) {
             if (err) {
               return console.error(err);
             } else {
-              async.map(streams, streamToBl,
-                        function(err, datas) {
-                          if (err) {
-                            return console.error(err);
-                          } else {
-                            datas.map(function(data) {
-                              console.log(data.toString());
-                            });
-                          }
-                        });
+              datas.forEach(function(data) {
+                console.log(data);
+              });
             }
           });
-
-// [function() { fetch(0); },
-//               function() { fetch(1); },
-//              function() { fetch(2); },
-//              function() { outputNow(); }]);
-
-// async.map(urls, http.get, function(err, results) {
-//  
-//});
-
 
 // -------------------------------------------------------------------------------
 
