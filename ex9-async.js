@@ -32,18 +32,12 @@ function httpGet(url, cb) {
              });
 }
 
-function streamToString(stream, cb) {
+function streamToData(stream, cb) {
   stream.setEncoding('utf-8');
-  stream.pipe(bl(function(err, data) {
-    if (err) {
-      cb(err, null);
-    } else {
-      cb(null, data.toString());
-    }
-  }));
+  stream.pipe(bl(cb));
 }
 
-var fetchUrlToString = async.compose(streamToString, httpGet);
+var fetchUrlToString = async.compose(streamToData, httpGet);
 
 async.map(urls,
           fetchUrlToString,
@@ -52,7 +46,7 @@ async.map(urls,
               return console.error(err);
             } else {
               datas.forEach(function(data) {
-                console.log(data);
+                console.log(data.toString());
               });
             }
           });
