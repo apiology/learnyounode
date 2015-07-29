@@ -18,8 +18,6 @@ var url3 = process.argv[4];
 
 var urls = [url1, url2, url3];
 
-// console.log(urls);
-
 // You must collect the complete content provided to you by each of
 // the URLs and print it to the console (stdout). You don't need to
 // print out the length, just the data as a String; one line per
