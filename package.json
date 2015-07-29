@@ -3,6 +3,7 @@
     "bl": "",
     "concat-stream": "",
     "async": "",
-    "after": ""
+    "after": "",
+    "strftime": ""
   }
 }
