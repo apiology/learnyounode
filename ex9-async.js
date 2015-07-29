@@ -25,18 +25,28 @@ var urls = [url1, url2, url3];
 // URL. The catch is that you must print them out in the same order as
 // the URLs are provided to you as command-line arguments.
 
+function httpGet(url, cb) {
+    http.get(url,
+             function(stream) {
+               cb(null, stream);
+             });
+}
+
 function fetchUrlToString(url, cb) {
-  http.get(url,
-           function(stream) {
-             stream.setEncoding('utf-8');
-             stream.pipe(bl(function(err, data) {
-               if (err) {
-                 cb(err, null);
-               } else {
-                 cb(null, data.toString());
-               }
-             }));
-           });
+  httpGet(url,
+          function(err, stream) {
+            if (err) {
+              cb(err, null);
+            } else {
+              stream.setEncoding('utf-8');
+              stream.pipe(bl(function(err, data) {
+                if (err) {
+                  cb(err, null);
+                } else {
+                  cb(null, data.toString());
+                }
+              }));
+            }});
 }
 
 async.map(urls,
