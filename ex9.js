@@ -9,29 +9,51 @@
 // that you need to use http.get(). However, this time you will be
 // provided with three URLs as the first three command-line arguments.
 
+var http = require('http');
+var bl = require('bl');
+
 var url1 = process.argv[2];
 var url2 = process.argv[3];
 var url3 = process.argv[4];
+
+var urls = [url1, url2, url3];
+
+// console.log(urls);
 
 // You must collect the complete content provided to you by each of
 // the URLs and print it to the console (stdout). You don't need to
 // print out the length, just the data as a String; one line per
 // URL. The catch is that you must print them out in the same order as
 // the URLs are provided to you as command-line arguments.
+var numReturned = 0;
 
-   var http = require('http');
-   var bl = require('bl');
-   var output = '';
-   http.get(url, function (res) {
-       res.setEncoding('utf-8');
-       res.pipe(bl(function (err, data) { // .pipe() on a stream pipes from one stream to another
-           if (err)                       // bl() returns a stream, and accepts a callback that is called when the stream is done.
-               return console.error(err);
-           dataStr = data.toString();
-           console.log(dataStr.length);
-           console.log(dataStr);
-       }));
-   });
+var output = [];
+
+var outputNow = function() {
+  for (i = 0; i < 3; i++) {
+    console.log(output[i]);
+  }
+};
+
+function createHttpResponseHandler(i) {
+  return function (res) {
+    res.setEncoding('utf-8');
+    res.pipe(bl(function (err, data) { // .pipe() on a stream pipes from one stream to another
+      if (err) // bl() returns a stream, and accepts a callback that is called when the stream is done.
+        return console.error(err);
+      dataStr = data.toString();
+      output[i] = dataStr;
+      numReturned++;
+      if (numReturned == 3) {
+        outputNow();
+      }
+    }));
+  };
+}
+
+for (i = 0; i < 3; i++) {
+  http.get(urls[i], createHttpResponseHandler(i));
+}
 
 // -------------------------------------------------------------------------------
 
